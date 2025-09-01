@@ -1,0 +1,24 @@
+import express from "express";
+import dotenv from "dotenv";
+import dbConnect from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+dotenv.config();
+const app = express();
+
+// Middleware
+app.use(express.json());
+
+// Routesa
+app.use("/api/auth", authRoutes);
+
+//DB connection
+dbConnect();
+
+// error handler should be the last middleware
+app.use(errorHandler);
+// PORT
+const PORT = process.env.PORT || 8001;
+app.listen(PORT, () => {
+  console.log(`Server Running at PORT ${PORT}`);
+});
