@@ -23,10 +23,5 @@ dbConnect();
 
 // error handler should be the last middleware
 app.use(errorHandler);
-// PORT
-// const PORT = process.env.PORT || 8001;
-// app.listen(PORT, () => {
-//   console.log(`Server Running at PORT ${PORT}`);
-// });
 
 export default app;
