@@ -19,12 +19,46 @@ export const getUserInfo = async (req, res, next) => {
   }
 };
 
+// @desc    update authenticated user Info
+// route    PUT /api/users/:id
+export const updateUserInfo = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updatedInfo = req.body;
+
+    if (req.user.id !== id) {
+      return next(new customError("Not authorized to update this user", 403));
+    }
+
+    // Find and update user info
+    const user = await User.findByIdAndUpdate(id, updatedInfo, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!user) {
+      return next(new customError("User Not Found", 404));
+    }
+
+    const data = {
+      id: user._id,
+      fullName: `${user.firstname} ${user.lastname}`.trim(),
+      email: user.email,
+    };
+
+    res
+      .status(200)
+      .json({ success: true, message: "User Info Updated", data: data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    create admin (only by superAdmin)
-// route    GET /api/users/profile
+// route    GET /api/users/create-admin
 export const createAdmin = async (req, res, next) => {
   try {
-    const { firstname, lastname, email, password, phone, address, role } =
-      req.body;
+    const { firstname, lastname, email, password, phone, address } = req.body;
     // check if existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {

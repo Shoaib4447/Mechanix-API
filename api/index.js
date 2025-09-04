@@ -1,9 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
-import dbConnect from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import { errorHandler } from "./middlewares/errorHandler.js";
+import dbConnect from "../config/db.js";
+import authRoutes from "../routes/authRoutes.js";
+import userRoutes from "../routes/userRoutes.js";
+import { errorHandler } from "../middlewares/errorHandler.js";
+
 dotenv.config();
 const app = express();
 
@@ -24,3 +25,5 @@ const PORT = process.env.PORT || 8001;
 app.listen(PORT, () => {
   console.log(`Server Running at PORT ${PORT}`);
 });
+
+export default app;
