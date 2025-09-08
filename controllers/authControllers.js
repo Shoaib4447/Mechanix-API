@@ -50,7 +50,7 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, status } = req.body;
 
     // Find user
     const user = await User.findOne({ email }).populate("role");
@@ -58,6 +58,9 @@ export const login = async (req, res, next) => {
       return next(new customError("Invalid credentials", 401));
     }
 
+    if (user.status === "blocked") {
+      return next(new customError("Account blocked", 401));
+    }
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {

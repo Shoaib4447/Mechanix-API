@@ -3,11 +3,13 @@ import {
   getUserInfo,
   createAdmin,
   updateUserInfo,
+  blockUnblockStatus,
 } from "../controllers/userControllers.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { authorizeRoles } from "../middlewares/authorizeRoles.js";
 import createAdminValidator from "../validators/createAdminValidator.js";
 import { validateRequest } from "../middlewares/validateRequest .js";
+import { updateStatusValidator } from "../validators/userValidator.js";
 
 const router = express.Router();
 
@@ -25,6 +27,16 @@ router.post(
   createAdminValidator,
   validateRequest,
   createAdmin
+);
+
+// Only super_admin can block/unblock admin
+router.patch(
+  "/:id/status",
+  verifyToken,
+  authorizeRoles("super_admin"),
+  updateStatusValidator,
+  validateRequest,
+  blockUnblockStatus
 );
 
 export default router;

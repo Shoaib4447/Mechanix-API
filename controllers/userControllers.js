@@ -103,3 +103,42 @@ export const createAdmin = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    update admin status block/unblock(only by superAdmin)
+// route    PATCH /api/users/:id/status
+export const blockUnblockStatus = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { status } = req.body;
+    const user = await User.findById(id).populate("role");
+
+    if (!user) {
+      return next(new customError("No User Found", 404));
+    }
+
+    if (user.role.name !== "admin") {
+      return next(new customError("Only admins can be blocked/unblocked", 403));
+    }
+
+    if (user.status === status) {
+      return next(new customError(`User is already ${status}`, 400));
+    }
+
+    if (user.role.name === "admin") user.status = status;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `User ${
+        user.status === "blocked" ? "blocked" : "unblocked"
+      } successfully`,
+      id: user._id,
+      fullName: `${user.firstname}${user.lastname}`,
+      email: user.email,
+      role: user.role.name,
+      status: user.status,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

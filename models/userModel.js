@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     profile_img_url: { type: String, default: null },
     status: {
       type: String,
-      enum: ["active", "inactive", "suspended"],
+      enum: ["active", "blocked"],
       default: "active",
     },
     deleted: {
