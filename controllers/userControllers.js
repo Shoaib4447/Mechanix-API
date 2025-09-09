@@ -142,3 +142,32 @@ export const blockUnblockStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc get all admins (only super admin)
+// route    GET /api/users/alladmins
+export const getAllAdmin = async (req, res, next) => {
+  try {
+    const allAdmins = await User.find().populate("role").select("-password");
+    const onlyAdmins = allAdmins.filter((admin) => {
+      return admin.role.name === "admin";
+    });
+
+    if (onlyAdmins.length === 0)
+      return next(new customError("No admins Found", 404));
+
+    res.status(200).json({
+      success: true,
+      message: "All admins",
+      totalAdmins: onlyAdmins.length,
+      admins: onlyAdmins.map((admin) => ({
+        id: admin._id,
+        fullName: `${admin.firstname} ${admin.lastname}`,
+        email: admin.email,
+        role: admin.role.name,
+        status: admin.status,
+      })),
+    });
+  } catch (error) {
+    next(error);
+  }
+};

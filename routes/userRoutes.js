@@ -4,6 +4,7 @@ import {
   createAdmin,
   updateUserInfo,
   blockUnblockStatus,
+  getAllAdmin,
 } from "../controllers/userControllers.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { authorizeRoles } from "../middlewares/authorizeRoles.js";
@@ -37,6 +38,14 @@ router.patch(
   updateStatusValidator,
   validateRequest,
   blockUnblockStatus
+);
+
+// get all admins for super_admin
+router.get(
+  "/alladmins",
+  verifyToken,
+  authorizeRoles("super_admin"),
+  getAllAdmin
 );
 
 export default router;
