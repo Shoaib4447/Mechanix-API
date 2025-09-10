@@ -1,9 +1,9 @@
 import Employee from "../models/employeeModel.js";
-import User from "../models/userModel.js";
 import { customError } from "../utils/customError.js";
+import Schedule from "../models/scheduleModel.js";
 
 // desc     create employee (only admin)
-// @route   POST /api/admin/create-employee
+// @route   POST /api/admins/create-employee
 export const createEmployee = async (req, res, next) => {
   try {
     const {
@@ -59,7 +59,7 @@ export const createEmployee = async (req, res, next) => {
 };
 
 // desc     get all employees(only admin)
-// @route   GET /api/admin/get-all-employee
+// @route   GET /api/admins/get-all-employee
 export const getAllEmployees = async (req, res, next) => {
   try {
     const employees = await Employee.find({ createdBy: req.user.id });
@@ -70,6 +70,49 @@ export const getAllEmployees = async (req, res, next) => {
     res
       .status(200)
       .json({ success: true, count: employees.length, employees: employees });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// desc     create schedule (only admin)
+// @route   POST /api/admins/create-schedule
+export const createSchedule = async (req, res, next) => {
+  try {
+    const { daysOfWeek, openTime, closeTime, slotDurationMinutes } = req.body;
+
+    if (openTime >= closeTime) {
+      return next(
+        new customError("open time must be before then closing time", 400)
+      );
+    }
+
+    const createdBy = req.user.id;
+
+    const existingSchedule = await Schedule.findOne({ createdBy, daysOfWeek });
+    if (existingSchedule) {
+      return next(
+        new customError(`Schedule for ${daysOfWeek} already exist`, 400)
+      );
+    }
+
+    const newSchedule = await Schedule.create({
+      daysOfWeek,
+      openTime,
+      closeTime,
+      slotDurationMinutes,
+      createdBy: req.user.id,
+    });
+    res.status(201).json({
+      success: true,
+      message: `Schedule created Successfully`,
+      data: {
+        id: newSchedule._id,
+        daysOfWeek: newSchedule.daysOfWeek,
+        slotDuration: newSchedule.slotDurationMinutes,
+        createdBy: newSchedule.createdBy,
+      },
+    });
   } catch (error) {
     next(error);
   }
