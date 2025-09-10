@@ -4,7 +4,7 @@ import dbConnect from "../config/db.js";
 import authRoutes from "../routes/authRoutes.js";
 import userRoutes from "../routes/userRoutes.js";
 import adminRoutes from "../routes/adminRoutes.js";
-// import superAdminRoutes from "../routes/superAdminRoutes.js";
+import superAdminRoutes from "../routes/superAdminRoutes.js";
 import { errorHandler } from "../middlewares/errorHandler.js";
 
 dotenv.config();
