@@ -50,7 +50,7 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const { email, password, status } = req.body;
+    const { email, password } = req.body;
 
     // Find user
     const user = await User.findOne({ email }).populate("role");
@@ -83,6 +83,7 @@ export const login = async (req, res, next) => {
       success: true,
       message: "Login successful",
       id: user._id,
+      role: user.role.name,
       token,
     });
   } catch (error) {

@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import dbConnect from "../config/db.js";
 import authRoutes from "../routes/authRoutes.js";
 import userRoutes from "../routes/userRoutes.js";
+import adminRoutes from "../routes/adminRoutes.js";
+// import superAdminRoutes from "../routes/superAdminRoutes.js";
 import { errorHandler } from "../middlewares/errorHandler.js";
 
 dotenv.config();
@@ -17,6 +19,8 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/super_admin", superAdminRoutes);
 
 //DB connection
 dbConnect();
