@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/api/admins", adminRoutes);
 app.use("/api/super_admin", superAdminRoutes);
 
 //DB connection
