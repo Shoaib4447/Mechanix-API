@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import Role from "../models/roleModel.js";
+import Schedule from "../models/scheduleModel.js";
 import { customError } from "../utils/customError.js";
 import bcrypt from "bcrypt";
 
@@ -49,6 +50,83 @@ export const updateUserInfo = async (req, res, next) => {
     res
       .status(200)
       .json({ success: true, message: "User Info Updated", data: data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    User able to see admin/workshop
+// route    GET /api/users/all-workshops
+export const allWorkShops = async (req, res, next) => {
+  try {
+    const allUsers = await User.find({ status: { $ne: "blocked" } })
+      .populate("role", "name")
+      .select("-password");
+    const allWorkShops = allUsers.filter((user) => {
+      return user.role.name === "admin";
+    });
+    res.status(200).json({
+      success: true,
+      message: "All Workshops",
+      totalWorkShops: allWorkShops.length,
+      data: allWorkShops,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    User able to select one admin/workshop
+// route    GET /api/users/workshops/:id
+export const singleWorkShop = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const workShop = await User.findById(id)
+      .populate("role", "name")
+      .select("-password");
+
+    if (!workShop) {
+      return next(new customError("No Workshop Found", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Single Workshop",
+      data: workShop,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    User able to see one admin/workshop Schedules
+// route    GET /api/users/workshops/:id/schedule
+export const getWorkshopSchedules = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const workShop = await User.findById(id)
+      .populate("role", "name")
+      .select("-password");
+
+    if (!workShop) {
+      return next(new customError("No Workshop Found", 404));
+    }
+    const availableSchedule = await Schedule.find({
+      createdBy: workShop._id,
+    });
+
+    if (!availableSchedule || availableSchedule.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No Schedule found for this WorkShop",
+        schedule: [],
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Single Workshop Schedule",
+      schedule: availableSchedule,
+    });
   } catch (error) {
     next(error);
   }

@@ -92,7 +92,7 @@ export const blockUnblockStatus = async (req, res, next) => {
 };
 
 // @desc get all admins (only super admin)
-// route    GET /api/users/alladmins
+// route    GET /api/super_admin/alladmins
 export const getAllAdmin = async (req, res, next) => {
   try {
     const allAdmins = await User.find().populate("role").select("-password");
